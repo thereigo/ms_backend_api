@@ -53,4 +53,17 @@ These improvements ensure the API works reliably and meets TechHive Solutions' r
 
 ---
 
+## Middleware Implementation (September 2025)
+
+To comply with TechHive Solutions' corporate policies, the following middleware was implemented with GitHub Copilot:
+
+- **Logging Middleware:** Logs HTTP method, request path, and response status code for all requests and responses.
+- **Error-Handling Middleware:** Catches unhandled exceptions and returns consistent JSON error responses (e.g., `{ "error": "Internal server error." }`).
+- **Authentication Middleware:** Validates tokens from the `Authorization` header. Only requests with a valid token (`Bearer secrettoken`) are allowed; others receive a 401 Unauthorized response.
+- **Pipeline Order:** Middleware is configured for optimal security and performance: error-handling first, authentication second, logging last.
+
+Copilot assisted in generating, integrating, and optimizing these middleware components, ensuring the API is secure, reliable, and auditable.
+
+---
+
 Generated and assisted by GitHub Copilot

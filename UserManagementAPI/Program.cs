@@ -4,7 +4,31 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 
 var app = builder.Build();
@@ -15,6 +39,61 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
+
+// Error-handling middleware
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        var errorJson = System.Text.Json.JsonSerializer.Serialize(new { error = "Internal server error." });
+        await context.Response.WriteAsync(errorJson);
+        Console.Error.WriteLine($"Unhandled exception: {ex.Message}");
+    }
+});
+
+// Authentication middleware
+app.Use(async (context, next) =>
+{
+    // Example: Expect token in Authorization header as 'Bearer <token>'
+    var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+    if (string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Bearer "))
+    {
+        context.Response.StatusCode = 401;
+        context.Response.ContentType = "application/json";
+        var errorJson = System.Text.Json.JsonSerializer.Serialize(new { error = "Unauthorized" });
+        await context.Response.WriteAsync(errorJson);
+        return;
+    }
+    var token = authHeader.Substring("Bearer ".Length).Trim();
+    // For demo, accept token 'secrettoken' as valid
+    if (token != "secrettoken")
+    {
+        context.Response.StatusCode = 401;
+        context.Response.ContentType = "application/json";
+        var errorJson = System.Text.Json.JsonSerializer.Serialize(new { error = "Invalid token" });
+        await context.Response.WriteAsync(errorJson);
+        return;
+    }
+    await next();
+});
+
+// Logging middleware
+app.Use(async (context, next) =>
+{
+    var method = context.Request.Method;
+    var path = context.Request.Path;
+    await next();
+    var statusCode = context.Response.StatusCode;
+    Console.WriteLine($"{method} {path} => {statusCode}");
+});
 
 app.UseHttpsRedirection();
 
