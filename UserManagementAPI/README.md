@@ -35,4 +35,22 @@ This is an ASP.NET Core Web API for managing users, created with the help of Git
 
 ---
 
+## Debugging & Improvements (September 2025)
+
+With the help of GitHub Copilot, the following bugs and issues were identified and fixed:
+
+- **Validation Added:**
+  - Users cannot be added or updated with empty names or invalid emails.
+- **Error Handling:**
+  - All endpoints now use try-catch blocks to prevent API crashes from unhandled exceptions.
+  - Internal errors are logged and return a generic error response.
+- **Reliability:**
+  - GET, PUT, and DELETE endpoints now handle non-existent user IDs gracefully.
+- **Logging:**
+  - Errors are logged to the console for easier debugging.
+
+These improvements ensure the API works reliably and meets TechHive Solutions' requirements. Copilot streamlined the debugging process by quickly identifying missing validation, error handling, and suggesting best practices for robust API design.
+
+---
+
 Generated and assisted by GitHub Copilot
