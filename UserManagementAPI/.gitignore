@@ -1,0 +1,39 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Logs
+*.log
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+
+# NuGet Packages
+*.nupkg
+# npm Packages
+node_modules/
+
+# Others
+*.swp
+*.tmp
+*.bak
+*.orig
+*.rej
+
+# Rider
+.idea/
+*.idea/
+
+# Test results
+TestResults/
